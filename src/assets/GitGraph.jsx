@@ -1,27 +1,17 @@
-const { Gitgraph } = require("@gitgraph/react");
+import React from 'react';
+import { Card, CardContent } from '@/components/ui/card';
 
-function MyComponent() {
+const GitGraph = () => {
   return (
-    <Gitgraph>
-      {(gitgraph) => {
-        // Simulate git commands with Gitgraph API.
-        const master = gitgraph.branch("master");
-        master.commit("Initial commit");
-
-        const develop = master.branch("develop");
-        develop.commit("Add TypeScript");
-
-        const aFeature = develop.branch("a-feature");
-        aFeature
-          .commit("Make it work")
-          .commit("Make it right")
-          .commit("Make it fast");
-
-        develop.merge(aFeature);
-        develop.commit("Prepare v1");
-
-        master.merge(develop).tag("v1.0.0");
-      }}
-    </Gitgraph>
+    <div className="flex items-center justify-center h-[80vh]">
+      <Card className="p-6 text-center shadow-lg">
+        <CardContent>
+          <h1 className="text-3xl font-bold mb-2">Coming Soon</h1>
+          <p className="text-muted-foreground">Git Graph visualization is under construction.</p>
+        </CardContent>
+      </Card>
+    </div>
   );
-}
+};
+
+export default GitGraph;

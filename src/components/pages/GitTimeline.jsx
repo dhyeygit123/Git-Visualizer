@@ -2,14 +2,16 @@ import React, { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { GitBranch, GitCommit, User, Calendar, Hash, Clock } from 'lucide-react';
+import { GitBranch, GitCommit, User, Calendar, Hash, Clock, GitGraph } from 'lucide-react';
 
 import InteractiveCommitTimeline from '../../assets/GitVisuals';
+import GraphComponent from '../../assets/GitGraph';
 
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 // Main Timeline Component
 export const GitTimeline = ({ gitData }) => {
   const [selectedBranch, setSelectedBranch] = useState('all');
-  
+  console.log(gitData)
   if (!gitData || !gitData.commits || gitData.commits.length === 0) {
     return (
       <Card className="h-96">
@@ -37,30 +39,65 @@ export const GitTimeline = ({ gitData }) => {
 
   return (
     <div className="space-y-6">
-      {/* Branch Filter */}
-      <BranchFilter 
-        branches={gitData.branches} 
-        selectedBranch={selectedBranch}
-        onBranchChange={setSelectedBranch}
-      />
+    {/* Branch Filter - keep this outside tabs since it affects both views */}
+    <BranchFilter 
+      branches={gitData.branches} 
+      selectedBranch={selectedBranch}
+      onBranchChange={setSelectedBranch}
+    />
+    
+    {/* Tab Container */}
+    <Tabs defaultValue="timeline" className="w-full">
+      <TabsList className="grid w-full grid-cols-2">
+        <TabsTrigger value="timeline" className="flex items-center space-x-2">
+          <GitCommit className="h-4 w-4" />
+          <span>Commit Timeline</span>
+        </TabsTrigger>
+        <TabsTrigger value="branches" className="flex items-center space-x-2">
+          <GitBranch className="h-4 w-4" />
+          <span>Branch Visualization</span>
+        </TabsTrigger>
+      </TabsList>
       
-      {/* Timeline Visualization */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <GitCommit className="h-5 w-5" />
-            <span>Commit Timeline</span>
-            <Badge variant="secondary">{filteredCommits.length} commits</Badge>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <InteractiveCommitTimeline commits={filteredCommits} />
-        </CardContent>
-      </Card>
-
-      {/* Commit Details */}
-      <CommitList commits={filteredCommits.slice(-10)} />
-    </div>
+      <TabsContent value="timeline" className="mt-6">
+        {/* Your existing timeline content */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center space-x-2">
+              <GitCommit className="h-5 w-5" />
+              <span>Commit Timeline</span>
+              <Badge variant="secondary">{filteredCommits.length} commits</Badge>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <InteractiveCommitTimeline commits={filteredCommits} />
+          </CardContent>
+        </Card>
+        
+        {/* Recent commits list */}
+        <div className="mt-6">
+          <CommitList commits={filteredCommits.slice(-10)} />
+        </div>
+      </TabsContent>
+      
+      <TabsContent value="branches" className="mt-6">
+        {/* Placeholder for your branch visualization component */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center space-x-2">
+              <GitBranch className="h-5 w-5" />
+              <span>Branch Visualization</span>
+              <Badge variant="secondary">{gitData.branches?.length || 0} branches</Badge>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {/* This is where you'll add your branch visualization component */}
+            <GraphComponent/>
+          </CardContent>
+        </Card>
+      </TabsContent>
+    </Tabs>
+  </div>
   );
 };
 
