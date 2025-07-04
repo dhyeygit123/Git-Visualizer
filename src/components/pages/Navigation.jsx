@@ -1,7 +1,7 @@
 import React from 'react'
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { GitBranch, Upload, BarChart3, Settings, Home} from "lucide-react";
+import { GitBranch, Upload, BarChart3, Settings, Home, CreditCard} from "lucide-react";
 
 const Navigation = ({currentPage, onPageChange }) => {
   const navItems = [
@@ -10,6 +10,7 @@ const Navigation = ({currentPage, onPageChange }) => {
     { id: 'visualizer', label: 'Visualizer', icon : GitBranch},
     { id: 'analytics', label: 'Analytics', icon : BarChart3 },
     { id: 'settings', label: 'Settings', icon : Settings},
+    { id: 'payments', label: 'Payments', icon : CreditCard}
   ];
   return (
     <div className="pt-4 bg-gray-50">

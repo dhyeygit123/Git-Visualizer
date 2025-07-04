@@ -6,6 +6,7 @@ import Navigation from './components/pages/Navigation'
 import SettingsPage from './components/pages/SettingsPage';
 import UploadPage from './components/pages/UploadPage'
 import VisualizerPage from './components/pages/VisualizerPage'
+import PaymentPage from './components/pages/Payments';
 
 const App = () => {
   // State to track which page is currently active
@@ -25,6 +26,8 @@ const App = () => {
         return <AnalyticsPage gitData={gitData} />;
       case 'settings':
         return <SettingsPage />;
+      case 'payments':
+        return <PaymentPage onPageChange={setCurrentPage}/>
       default:
         return <HomePage onPageChange={setCurrentPage} />;
     }
