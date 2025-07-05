@@ -26,7 +26,7 @@ const App = () => {
         return <AnalyticsPage gitData={gitData} />;
       case 'settings':
         return <SettingsPage />;
-      case 'payments':
+      case 'donate':
         return <PaymentPage onPageChange={setCurrentPage}/>
       default:
         return <HomePage onPageChange={setCurrentPage} />;

@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { GitBranch, Upload, BarChart3, Settings, Home, CreditCard, Menu, X} from "lucide-react";
+import { GitBranch, Upload, BarChart3, Settings, Home, Heart, Menu, X} from "lucide-react";
 
 const Navigation = ({currentPage, onPageChange }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -12,7 +12,7 @@ const Navigation = ({currentPage, onPageChange }) => {
     { id: 'visualizer', label: 'Visualizer', icon : GitBranch},
     { id: 'analytics', label: 'Analytics', icon : BarChart3 },
     { id: 'settings', label: 'Settings', icon : Settings},
-    { id: 'payments', label: 'Payments', icon : CreditCard}
+    { id: 'donate', label: 'Donate', icon : Heart}
   ];
 
   const toggleMobileMenu = () => {

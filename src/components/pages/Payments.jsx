@@ -87,7 +87,7 @@ const RazorpayPayment = ({ onPageChange }) => {
     setPaymentStatus(null);
     const receiptID = Math.random().toString(36).substring(2, 10);
     try {
-      const response = await fetch("http://localhost:3000/orders", {
+      const response = await fetch("https://payment-backend-uvs8.onrender.com/orders", {
         method : "POST",
         body : JSON.stringify({
           amount : formData.amount,
@@ -122,7 +122,7 @@ const RazorpayPayment = ({ onPageChange }) => {
           });
           setLoading(false);
           
-          const validateResponse = await fetch('http://localhost:3000/order/validate', {
+          const validateResponse = await fetch('https://payment-backend-uvs8.onrender.com/order/validate', {
             method : "POST",
             body : JSON.stringify(body),
             headers: {
