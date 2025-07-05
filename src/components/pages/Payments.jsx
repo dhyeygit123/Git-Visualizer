@@ -3,9 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-// import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-// import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { 
   CreditCard, 
@@ -16,28 +14,30 @@ import {
   CheckCircle,
   AlertCircle,
   Loader2,
-  IndianRupee
+  IndianRupee,
+  Heart
 } from "lucide-react";
 
 const RazorpayPayment = ({ onPageChange }) => {
   const [formData, setFormData] = useState({
-    amount: 0,
+    amount: '',
     currency: 'INR',
     name: '',
     email: '',
     phone: '',
-    description: 'GitFlow Visualizer Premium Subscription',
-    plan: 'monthly'
+    description: 'Donation to GitFlow Visualizer',
+    plan: 'custom'
   });
   
   const [loading, setLoading] = useState(false);
   const [paymentStatus, setPaymentStatus] = useState(null);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('card');
 
-  const plans = [
-    { id: 'monthly', name: 'Monthly Premium', price: 299, description: 'Monthly access to all features' },
-    { id: 'yearly', name: 'Yearly Premium', price: 2999, description: 'Yearly access with 2 months free' },
-    { id: 'lifetime', name: 'Lifetime Access', price: 9999, description: 'One-time payment, lifetime access' }
+  const suggestedAmounts = [
+    { amount: 100, label: '₹100', description: 'Buy us a coffee' },
+    { amount: 500, label: '₹500', description: 'Support development' },
+    { amount: 1000, label: '₹1000', description: 'Make a difference' },
+    { amount: 2000, label: '₹2000', description: 'Generous supporter' }
   ];
 
   const paymentMethods = [
@@ -55,12 +55,10 @@ const RazorpayPayment = ({ onPageChange }) => {
     }));
   };
 
-  const handlePlanChange = (planId) => {
-    const selectedPlan = plans.find(plan => plan.id === planId);
+  const handleAmountSelect = (amount) => {
     setFormData(prev => ({
       ...prev,
-      plan: planId,
-      amount: selectedPlan.price.toString()
+      amount: amount.toString()
     }));
   };
 
@@ -80,6 +78,11 @@ const RazorpayPayment = ({ onPageChange }) => {
       return;
     }
 
+    if (parseFloat(formData.amount) < 1) {
+      setPaymentStatus({ type: 'error', message: 'Minimum donation amount is ₹1' });
+      return;
+    }
+
     setLoading(true);
     setPaymentStatus(null);
     const receiptID = Math.random().toString(36).substring(2, 10);
@@ -95,47 +98,39 @@ const RazorpayPayment = ({ onPageChange }) => {
           "Content-Type": "application/json"
         }
       });
-      // Load Razorpay script
       
       const order = await response.json();
-      // console.log(order)
-      
       
       const scriptLoaded = await loadRazorpayScript();
       if (!scriptLoaded) {
         throw new Error('Failed to load Razorpay SDK');
       }
 
-      // In a real application, you would create an order on your backend
-      // For demo purposes, we're using test credentials
       const options = {
-        key: 'rzp_test_lIugxGDVX7InEd', // Replace with your test key
-        amount: formData.amount * 100, // Amount in paisa
+        key: 'rzp_test_lIugxGDVX7InEd',
+        amount: formData.amount * 100,
         currency: formData.currency,
         name: 'GitFlow Visualizer',
         description: formData.description,
-        image: 'https://your-logo-url.com/logo.png', // Optional logo
-        order_id: `${order.id}`, // In real app, get from backend
+        image: 'https://your-logo-url.com/logo.png',
+        order_id: `${order.id}`,
         handler: async function (response) {
-          // Payment successful
           setPaymentStatus({
             type: 'success',
-            message: 'Payment completed successfully!',
+            message: 'Thank you for your generous donation!',
             paymentId: response.razorpay_payment_id
           });
           setLoading(false);
           
-          // Here you would typically verify the payment on your backend
           const validateResponse = await fetch('http://localhost:3000/order/validate', {
             method : "POST",
             body : JSON.stringify(body),
             headers: {
               "Content-Type" : "application/json",
             }
-          }
-        );
-        const jsonResponse = await validateResponse.json();
-        console.log(jsonResponse);
+          });
+          const jsonResponse = await validateResponse.json();
+          console.log(jsonResponse);
         },
         prefill: {
           name: formData.name,
@@ -154,11 +149,11 @@ const RazorpayPayment = ({ onPageChange }) => {
         modal: {
           ondismiss: function() {
             setLoading(false);
-            setPaymentStatus({ type: 'info', message: 'Payment cancelled by user' });
+            setPaymentStatus({ type: 'info', message: 'Donation cancelled by user' });
           }
         }
       };
-      console.log(options.amount)
+      
       const rzp = new window.Razorpay(options);
       
       rzp.on('payment.failed', function (response) {
@@ -170,7 +165,6 @@ const RazorpayPayment = ({ onPageChange }) => {
       });
 
       rzp.open();
-      
 
     } catch (error) {
       setPaymentStatus({ type: 'error', message: error.message });
@@ -181,53 +175,79 @@ const RazorpayPayment = ({ onPageChange }) => {
   return (
     <div className="max-w-4xl mx-auto p-6 space-y-6">
       {/* Header */}
-      <div className="text-center space-y-2">
-        <h1 className="text-3xl font-bold text-gray-900">Upgrade to Premium</h1>
-        <p className="text-gray-600">Choose your plan and complete payment securely</p>
+      <div className="text-center space-y-4">
+        <div className="flex items-center justify-center gap-2">
+          <Heart className="h-8 w-8 text-red-500" />
+          <h1 className="text-3xl font-bold text-gray-900">Support Our Work</h1>
+        </div>
+        <p className="text-gray-600 max-w-2xl mx-auto">
+          Help us continue developing and improving GitFlow Visualizer. Your donation, no matter the size, 
+          makes a real difference in keeping this project alive and growing.
+        </p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Payment Form */}
+        {/* Donation Form */}
         <div className="lg:col-span-2 space-y-6">
-          {/* Plan Selection */}
+          {/* Amount Selection */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <IndianRupee className="h-5 w-5" />
-                Choose Your Plan
+                Choose Donation Amount
               </CardTitle>
+              <CardDescription>
+                Select a suggested amount or enter your own
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {plans.map((plan) => (
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                {suggestedAmounts.map((suggestion) => (
                   <div
-                    key={plan.id}
-                    className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
-                      formData.plan === plan.id 
+                    key={suggestion.amount}
+                    className={`p-3 rounded-lg border-2 cursor-pointer transition-all text-center ${
+                      formData.amount === suggestion.amount.toString()
                         ? 'border-blue-500 bg-blue-50' 
                         : 'border-gray-200 hover:border-gray-300'
                     }`}
-                    onClick={() => handlePlanChange(plan.id)}
+                    onClick={() => handleAmountSelect(suggestion.amount)}
                   >
-                    <div className="text-center space-y-2">
-                      <h3 className="font-semibold">{plan.name}</h3>
-                      <div className="text-2xl font-bold text-blue-600">
-                        ₹{plan.price}
-                      </div>
-                      <p className="text-sm text-gray-600">{plan.description}</p>
+                    <div className="text-lg font-bold text-blue-600">
+                      {suggestion.label}
                     </div>
+                    <p className="text-xs text-gray-600 mt-1">{suggestion.description}</p>
                   </div>
                 ))}
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="custom-amount">Or enter custom amount</Label>
+                <div className="relative">
+                  <IndianRupee className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                  <Input
+                    id="custom-amount"
+                    name="amount"
+                    type="number"
+                    min="1"
+                    value={formData.amount}
+                    onChange={handleInputChange}
+                    placeholder="Enter amount"
+                    className="pl-10"
+                  />
+                </div>
               </div>
             </CardContent>
           </Card>
 
-          {/* Customer Information */}
+          {/* Donor Information */}
           <Card>
             <CardHeader>
-              <CardTitle>Customer Information</CardTitle>
+              <CardTitle>Donor Information</CardTitle>
+              <CardDescription>
+                We'd love to know who our supporters are!
+              </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-7">
+            <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="name">Full Name *</Label>
@@ -300,33 +320,34 @@ const RazorpayPayment = ({ onPageChange }) => {
           </Card>
         </div>
 
-        {/* Order Summary */}
+        {/* Donation Summary */}
         <div className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Order Summary</CardTitle>
+              <CardTitle>Donation Summary</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
                 <div className="flex justify-between">
-                  <span>Plan:</span>
-                  <span className="font-semibold">
-                    {plans.find(p => p.id === formData.plan)?.name}
-                  </span>
+                  <span>Donation Amount:</span>
+                  <span className="font-semibold">₹{formData.amount || '0'}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span>Amount:</span>
-                  <span className="font-semibold">₹{formData.amount}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Tax:</span>
+                  <span>Processing Fee:</span>
                   <span className="font-semibold">₹0</span>
                 </div>
                 <Separator />
                 <div className="flex justify-between text-lg font-bold">
                   <span>Total:</span>
-                  <span>₹{formData.amount}</span>
+                  <span>₹{formData.amount || '0'}</span>
                 </div>
+              </div>
+              
+              <div className="mt-4 p-3 bg-blue-50 rounded-lg">
+                <p className="text-sm text-blue-800">
+                  <Heart className="inline h-4 w-4 mr-1" />
+                  Your donation helps us maintain and improve GitFlow Visualizer for everyone.
+                </p>
               </div>
             </CardContent>
           </Card>
@@ -359,10 +380,10 @@ const RazorpayPayment = ({ onPageChange }) => {
             </Alert>
           )}
 
-          {/* Payment Button */}
+          {/* Donation Button */}
           <Button
             onClick={initiatePayment}
-            disabled={loading}
+            disabled={loading || !formData.amount || parseFloat(formData.amount) < 1}
             className="w-full bg-blue-600 hover:bg-blue-700"
             size="lg"
           >
@@ -373,8 +394,8 @@ const RazorpayPayment = ({ onPageChange }) => {
               </>
             ) : (
               <>
-                <CreditCard className="mr-2 h-4 w-4" />
-                Pay ₹{formData.amount}
+                <Heart className="mr-2 h-4 w-4" />
+                Donate ₹{formData.amount || '0'}
               </>
             )}
           </Button>
