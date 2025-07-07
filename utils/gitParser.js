@@ -38,6 +38,7 @@ export class GitParser {
       const gitFiles = {};
       
       zipContent.forEach((relativePath, file) => {
+        
         if (relativePath.includes('.git/') && !file.dir) {
           // Remove the project folder prefix to get clean .git paths
           const gitPath = relativePath.substring(relativePath.indexOf('.git/'));
@@ -48,7 +49,7 @@ export class GitParser {
       if (Object.keys(gitFiles).length === 0) {
         throw new Error('No .git folder found in the uploaded file');
       }
-
+ 
       // Parse git files
       await this.parseGitFiles(gitFiles);
       
