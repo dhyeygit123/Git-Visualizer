@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/comp
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { GitBranch, Upload, BarChart3, Settings, Home, FileText, Users, Calendar, GitCommit, TrendingUp } from "lucide-react";
+import PDFExportComponent from './PdfComponent'; // Import the PDF export component
 
 const AnalyticsPage = ({ gitData }) => {
   const [analytics, setAnalytics] = useState({
@@ -325,6 +326,9 @@ const AnalyticsPage = ({ gitData }) => {
               </CardContent>
             </Card>
         </div>
+
+        {/* PDF Export Component */}
+        <PDFExportComponent analytics={analytics} gitData={gitData} />
 
         {!gitData && (
           <Card className="mt-6">

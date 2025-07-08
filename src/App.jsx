@@ -64,9 +64,9 @@ const App = () => {
           <div className="flex justify-center space-x-6 text-sm text-gray-500">
             <span>Built with React & shadcn/ui</span>
             <span>•</span>
-            <span>Privacy-First Design</span>
+            <span>Built By: Dhyey Patel</span>
             <span>•</span>
-            <span>Open Source</span>
+            <span>dhyey.c.patel@gmail.com</span>
           </div>
         </div>
       </footer>
